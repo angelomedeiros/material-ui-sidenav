@@ -1,10 +1,10 @@
 const faker = require('faker')
 
 module.exports = () => {
-  const dados = { writers: [] }
+  const dados = { writers: [], texts: [] }
 
-  for ( let i = 0; i < 100; i++ ) {
-    const dado = {
+  for ( let i = 0; i < 15; i++ ) {
+    const writer = {
       id: faker.random.uuid(),
       name: faker.name.findName(),
       born: faker.date.past(),
@@ -12,7 +12,16 @@ module.exports = () => {
       description: faker.lorem.paragraph(),
       image: faker.image.avatar()
     }
-    dados.writers.push(dado)
+    const text = {
+      id: faker.random.uuid(),
+      writerId: writer.id,
+      title: faker.lorem.words(2),
+      description: faker.lorem.paragraph(),
+      published: faker.random.number({ min: 1000, max: 2000 })
+    }
+
+    dados.writers.push(writer)
+    dados.texts.push(text)
   }
   
   return dados
