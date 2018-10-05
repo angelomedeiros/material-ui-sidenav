@@ -1,5 +1,8 @@
 import React, { Component, Fragment } from 'react'
-import { BrowserRouter, Link, Route, Switch } from 'react-router-dom'
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import CssBaseline from '@material-ui/core/CssBaseline'
+
+import SideNav from './layout'
 import Writers from './writers';
 import { NotFound } from '../components/errors'
 
@@ -18,25 +21,15 @@ export default class extends Component {
 
     return <BrowserRouter>
       <Fragment>
-        <ul>
-          <li>
-            <Link to='/'>Home</Link>
-          </li>
-          <li>
-            <Link to='/writers'>Writers</Link>
-          </li>
-        </ul>
-
-        <hr />
-
-        <Switch>
-          <Route exact path='/' render={() => <div>Home</div>} />
-          <Route path='/writers' render={props => <Writers {...props} writers={writers} />} />
-          <Route component={NotFound} />
-        </Switch>
-        
+        <CssBaseline />
+        <SideNav writers={writers}>        
+          <Switch>
+            <Route exact path='/' render={() => <div>Home</div>} />
+            <Route path='/writers' render={props => <Writers {...props} writers={writers} />} />
+            <Route component={NotFound} />
+          </Switch>        
+        </SideNav>
       </Fragment>
-
     </BrowserRouter>
   }
 }
