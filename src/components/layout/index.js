@@ -1,4 +1,6 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
+import { Link, withRouter } from 'react-router-dom'
+import { compose } from 'recompose'
 import { Menu } from '@material-ui/icons'
 import { withStyles } from '@material-ui/core/styles'
 import {
@@ -10,7 +12,8 @@ import {
   Drawer,
   Divider,
   MenuList,
-  MenuItem
+  MenuItem,
+  CssBaseline
 } from '@material-ui/core'
 
 const drawerWidth = 240;
@@ -22,7 +25,7 @@ const styles = theme => ({
     overflow: 'hidden',
     position: 'relative',
     display: 'flex',
-    width: '100%',
+    width: '100%'
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -44,6 +47,9 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.default,
     padding: theme.spacing.unit * 3,
   },
+  nested: {
+    paddingLeft: theme.spacing.unit * 4,
+  }
 })
 
 class SideNav extends Component {
@@ -57,7 +63,7 @@ class SideNav extends Component {
   }
 
   render() {
-    const { classes, children } = this.props
+    const { classes, children, writers, location: { pathname } } = this.props
     const { mobileOpen } = this.state
 
     const drawer = (
@@ -66,13 +72,27 @@ class SideNav extends Component {
           <div className={classes.toolbar} />
         </Hidden>
         <MenuList>
-
+          <MenuItem component={Link} to='/' selected={ '/' === pathname } >
+            Home
+          </MenuItem>
+          <MenuItem component={Link} to='/writers' selected={ '/writers' === pathname } >
+            Writers
+          </MenuItem>
+          {writers.map(({ id, name }) => {
+            return <MenuItem 
+              key={id}
+              className={classes.nested}
+              component={Link}
+              to={`/writers/${id}`} selected={ `/writers/${id}` === pathname } >
+              {name}
+            </MenuItem>
+          })}
         </MenuList>
-        <Divider />
       </div>
     )
 
-    return <div className={classes.root}>
+    return <Fragment>
+      <div className={classes.root}>
         <AppBar position='absolute' className={classes.appBar}>
           <Toolbar>
             <IconButton
@@ -119,7 +139,11 @@ class SideNav extends Component {
           {children}
         </main>
       </div>
+    </Fragment>
   }
 }
 
-export default withStyles(styles)(SideNav)
+export default compose(
+  withRouter,
+  withStyles(styles)
+)(SideNav)
