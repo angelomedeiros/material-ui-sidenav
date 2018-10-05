@@ -26,7 +26,7 @@ export default ({ match: { url }, name, born, description, deceased, image, text
 
           if (!text) {
             // return <Redirect to={`${url}`} />
-            return <Redirect to={`${url}`} />
+            return <NotFound />
           }
           
           return <Text {...props} {...text} />
