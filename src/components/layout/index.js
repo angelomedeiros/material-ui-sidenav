@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import { Link, withRouter } from 'react-router-dom'
 import { compose } from 'recompose'
-import { Menu } from '@material-ui/icons'
+import { Menu, ExpandLess, ExpandMore, Bookmarks, Bookmark, Home } from '@material-ui/icons'
 import { withStyles } from '@material-ui/core/styles'
 import {
   AppBar,
@@ -10,10 +10,11 @@ import {
   Typography,
   Hidden,
   Drawer,
-  Divider,
   MenuList,
   MenuItem,
-  CssBaseline
+  Collapse,
+  ListItemText,
+  ListItemIcon
 } from '@material-ui/core'
 
 const drawerWidth = 240;
@@ -25,7 +26,8 @@ const styles = theme => ({
     overflow: 'hidden',
     position: 'relative',
     display: 'flex',
-    width: '100%'
+    width: '100%',
+    height: '100%'
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -36,6 +38,9 @@ const styles = theme => ({
     },
   },
   toolbar: theme.mixins.toolbar,
+  docked: {
+    height: '100%',
+  },
   drawerPaper: {
     width: drawerWidth,
     [theme.breakpoints.up('md')]: {
@@ -49,6 +54,11 @@ const styles = theme => ({
   },
   nested: {
     paddingLeft: theme.spacing.unit * 4,
+  },
+  '@global': {
+    'html, body, #root': {
+      height: '100%'
+    }
   }
 })
 
@@ -56,10 +66,15 @@ class SideNav extends Component {
 
   state = {
     mobileOpen: false,
+    expanded: false
   }
 
   handleDrawerToggle = () => {
     this.setState(state => ({ mobileOpen: !state.mobileOpen }))
+  }
+
+  handleExpandClick = () => {
+    this.setState(state => ({ expanded: !state.expanded }))
   }
 
   render() {
@@ -73,20 +88,36 @@ class SideNav extends Component {
         </Hidden>
         <MenuList>
           <MenuItem component={Link} to='/' selected={ '/' === pathname } >
-            Home
+          <ListItemIcon>
+              <Home />
+            </ListItemIcon>
+            <ListItemText inset primary="Home" />
           </MenuItem>
-          <MenuItem component={Link} to='/writers' selected={ '/writers' === pathname } >
-            Writers
+          <MenuItem 
+            component={Link} 
+            to='/writers' 
+            selected={ '/writers' === pathname } 
+            onClick={this.handleExpandClick} >
+            <ListItemIcon>
+              <Bookmarks />
+            </ListItemIcon>
+            <ListItemText inset primary="Writers" />
+            {this.state.expanded ? <ExpandLess /> : <ExpandMore />}
           </MenuItem>
-          {writers.map(({ id, name }) => {
-            return <MenuItem 
-              key={id}
-              className={classes.nested}
-              component={Link}
-              to={`/writers/${id}`} selected={ `/writers/${id}` === pathname } >
-              {name}
-            </MenuItem>
-          })}
+          <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
+            {writers.map(({ id, name }) => {
+              return <MenuItem 
+                key={id}
+                className={classes.nested}
+                component={Link}
+                to={`/writers/${id}`} selected={ `/writers/${id}` === pathname } >
+                <ListItemIcon>
+                  <Bookmark />
+                </ListItemIcon>
+                <ListItemText inset  secondary={name} />                
+              </MenuItem>
+            })}
+          </Collapse>
         </MenuList>
       </div>
     )
@@ -114,7 +145,7 @@ class SideNav extends Component {
             open={mobileOpen}
             onClose={this.handleDrawerToggle}
             classes={{
-              paper: classes.drawerPaper,
+              paper: classes.drawerPaper
             }}
             ModalProps={{
               keepMounted: true, // Better open performance on mobile.
@@ -129,6 +160,7 @@ class SideNav extends Component {
             open
             classes={{
               paper: classes.drawerPaper,
+              docked: classes.docked
             }}
           >
             {drawer}
